@@ -256,6 +256,10 @@ def send_telegram(message):
 
 # ─── Main ──────────────────────────────────────────────────────────
 def main():
+    print("=" * 50)
+    print("  CLOSING BELL · v3 · TEXT-ONLY · NO IMAGE")
+    print("=" * 50)
+
     data, date_str, day_str = fetch_market_data()
     print(f"  Latest close: {date_str} ({day_str})")
 
