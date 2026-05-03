@@ -104,24 +104,24 @@
   /* Headlines */
   .news{padding:0 16px 14px;}
   .news-item{
-    display:flex;gap:10px;padding:10px 0;
+    display:flex;gap:12px;padding:13px 0;
     border-bottom:1px solid rgba(139,92,246,0.08);
   }
   .news-item:last-child{border-bottom:none;}
   .news-num{
     flex-shrink:0;
-    width:22px;height:22px;border-radius:6px;
+    width:26px;height:26px;border-radius:6px;
     background:rgba(139,92,246,0.12);
-    border:1px solid rgba(139,92,246,0.2);
+    border:1px solid rgba(139,92,246,0.25);
     color:#a78bfa;
-    font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;
+    font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;
     display:flex;align-items:center;justify-content:center;
     margin-top:1px;
   }
   .news-body{flex:1;min-width:0;}
-  .news-title{font-size:12px;line-height:1.45;color:#e8e6f0;margin-bottom:4px;font-weight:400;}
-  .news-meta{display:flex;gap:8px;align-items:center;font-family:'JetBrains Mono',monospace;font-size:9px;color:rgba(232,230,240,0.35);letter-spacing:0.05em;}
-  .news-source{color:rgba(167,139,250,0.7);font-weight:500;text-transform:uppercase;letter-spacing:0.1em;}
+  .news-title{font-size:14px;line-height:1.5;color:#f0eef7;margin-bottom:6px;font-weight:500;letter-spacing:-0.005em;}
+  .news-meta{display:flex;gap:8px;align-items:center;font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(232,230,240,0.4);letter-spacing:0.05em;}
+  .news-source{color:rgba(167,139,250,0.85);font-weight:600;text-transform:uppercase;letter-spacing:0.12em;}
   .news-empty{padding:14px;text-align:center;font-size:11px;color:rgba(232,230,240,0.3);font-style:italic;}
 
   /* Editor's note */
@@ -160,10 +160,6 @@
   <div class="sec-hdr"><span class="sec-label">Forex &amp; Volatility</span><div class="sec-line"></div></div>
   <div class="cards-row" id="cards"></div>
 
-  <!-- Sectors -->
-  <div class="sec-hdr"><span class="sec-label">Sector Movers</span><div class="sec-line"></div></div>
-  <div class="sectors" id="sectors"></div>
-
   <!-- News -->
   <div class="sec-hdr"><span class="sec-label">📰 Today's Headlines</span><div class="sec-line"></div></div>
   <div class="news" id="news"></div>
@@ -181,7 +177,7 @@
 
 </div>
 
-<script id="market-data" type="application/json">__DATA_JSON__</script>
+<script id="market-data" type="application/json">{"date": "2026-05-02", "issueNumber": "122", "indices": [{"name": "S&P 500", "level": 7230.12, "change": 0.29}, {"name": "NASDAQ", "level": 25114.44, "change": 0.89}, {"name": "Dow Jones", "level": 49499.27, "change": -0.31}], "forex": {"pair": "USD/JPY", "value": 157.03, "change": -1.97}, "vix": {"value": 16.99, "change": 0.59, "regime": "Quiet"}, "sectors": [], "headlines": [{"title": "Chinese stocks are about to get a big AI boost, Morgan Stanley predicts", "source": "CNBC", "age": "1h"}, {"title": "JPMorgan's Jamie Dimon issued vague credit recession warning, but the bond market has more pressing issues", "source": "CNBC", "age": "15h"}, {"title": "Cautious optimism: Berkshire investors weigh future under new CEO Greg Abel", "source": "CNBC", "age": "1d"}, {"title": "Berkshire Hathaway shopping extravaganza draws lighter crowds", "source": "CNBC", "age": "1d"}, {"title": "Fed signals patience on rate cuts as inflation moderates further", "source": "Reuters", "age": "2h"}], "closingNote": "Markets close in a broad rally with NASDAQ leading at +0.89%. VIX at 16.99, USD/JPY at 157.03."}</script>
 <script>
 const D = JSON.parse(document.getElementById('market-data').textContent);
 const fmt  = n => n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
