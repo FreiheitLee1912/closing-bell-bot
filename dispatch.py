@@ -166,62 +166,67 @@ def fmt_level(n):
 
 
 def build_message(data, date_str, day_str, headlines, note):
-    """Returns Telegram-flavored HTML message string."""
-    e = html.escape  # shortcut
+    """Returns Telegram-flavored HTML — optimized for mobile rendering."""
+    e = html.escape
+
+    # Determine overall market tone for the title badge
+    avg_chg = sum(data[k]["change"] for k in ("sp500", "nasdaq", "dow")) / 3
+    if avg_chg > 0.5:
+        tone = "🟢 Risk On"
+    elif avg_chg < -0.5:
+        tone = "🔴 Risk Off"
+    else:
+        tone = "⚪ Mixed"
+
     lines = []
 
-    # Header
-    lines.append(f"🏛 <b>US MARKET CLOSE</b> | <code>{date_str}</code> {day_str}")
+    # ── Header ────────────────────────────────────────
+    lines.append(f"🏛 <b>The Closing Bell</b> · {tone}")
+    lines.append(f"<i>{day_str} · {date_str} · US market close</i>")
     lines.append("")
 
-    # Indices — monospace table for alignment
-    lines.append("📊 <b>MAJOR INDICES</b>")
-    lines.append("<pre>")
-    lines.append("Index      Level         Change")
-    lines.append("───────────────────────────────")
+    # ── Indices ──────────────────────────────────────
+    lines.append("🇺🇸 <b>Indices</b>")
     for key, name in [("sp500","S&P 500"), ("nasdaq","NASDAQ"), ("dow","Dow Jones")]:
         d = data[key]
-        lines.append(f"{name:<10} {fmt_level(d['level'])}  {fmt_pct(d['change']):>7} {emoji_for(d['change'])}")
-    lines.append("</pre>")
+        em = emoji_for(d["change"])
+        lines.append(f"{em} <b>{name}</b> · <code>{d['level']:,.2f}</code> · <b>{fmt_pct(d['change'])}</b>")
+    lines.append("")
 
-    # Forex
+    # ── FX & Volatility ──────────────────────────────
+    lines.append("💱 <b>FX &amp; Vol</b>")
     fx = data["usdjpy"]
-    lines.append("💱 <b>FOREX</b>")
-    lines.append(f"• <b>USD/JPY</b>: <code>{fx['level']:.2f}</code>  {emoji_for(fx['change'])} {fmt_pct(fx['change'])}")
-    lines.append("")
-
-    # VIX
+    lines.append(f"{emoji_for(fx['change'])} <b>USD/JPY</b> · <code>{fx['level']:.2f}</code> · <b>{fmt_pct(fx['change'])}</b>")
     vix = data["vix"]
-    lines.append(f"⚠️ <b>VIX</b>: <code>{vix['level']:.2f}</code>  ({fmt_pct(vix['change'])} — {vix_regime(vix['level'])})")
+    lines.append(f"🔵 <b>VIX</b> · <code>{vix['level']:.2f}</code> · <b>{fmt_pct(vix['change'])}</b> · <i>{vix_regime(vix['level'])}</i>")
     lines.append("")
 
-    # Sectors
-    lines.append("🔥 <b>SECTOR MOVERS</b>")
-    for label, key, ico in [("Tech","tech","💻"), ("Energy","energy","🛢")]:
+    # ── Sectors ──────────────────────────────────────
+    lines.append("🔥 <b>Sectors</b>")
+    for label, key in [("Tech 💻","tech"), ("Energy 🛢","energy")]:
         chg = data[key]["change"]
-        lines.append(f"• {ico} <b>{label}</b>: {fmt_pct(chg)} ({sector_sentiment(chg)})")
+        lines.append(f"{emoji_for(chg)} <b>{label}</b> · <b>{fmt_pct(chg)}</b> · <i>{sector_sentiment(chg)}</i>")
     lines.append("")
 
-    # Headlines
+    # ── Headlines ────────────────────────────────────
     if headlines:
-        lines.append("📰 <b>TODAY'S HEADLINES</b>")
+        lines.append("📰 <b>Headlines</b>")
         for i, h in enumerate(headlines, 1):
             title = e(h["title"])
             url   = h["url"]
             src   = e(h["source"])
-            age   = f" · {h['age']} ago" if h["age"] else ""
+            age   = h.get("age", "")
+            meta  = f"{src} · {age}" if age else src
+
             if url:
                 lines.append(f"<b>{i}.</b> <a href=\"{e(url)}\">{title}</a>")
             else:
                 lines.append(f"<b>{i}.</b> {title}")
-            lines.append(f"   <i>{src}{age}</i>")
+            lines.append(f"   <i>— {meta}</i>")
         lines.append("")
 
-    # Note
-    lines.append("💬 <b>CLOSING NOTE</b>")
-    lines.append(f"<i>{e(note)}</i>")
-    lines.append("")
-    lines.append(f"<code>──── Compiled at US close ────</code>")
+    # ── Editor's Note as native blockquote ───────────
+    lines.append(f"<blockquote>💬 {e(note)}</blockquote>")
 
     return "\n".join(lines)
 
