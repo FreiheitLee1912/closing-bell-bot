@@ -174,8 +174,8 @@ def render_png(html_path):
     with sync_playwright() as p:
         browser = p.chromium.launch()
         page = browser.new_page(
-            viewport={"width": 900, "height": 1400},
-            device_scale_factor=2,
+            viewport={"width": 640, "height": 1200},
+            device_scale_factor=3,
         )
         page.goto(f"file://{html_path.absolute()}")
         page.wait_for_load_state("networkidle")
