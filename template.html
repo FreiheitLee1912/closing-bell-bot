@@ -4,8 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The Closing Bell</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   *{box-sizing:border-box;margin:0;padding:0;}
   html,body{font-family:'Inter',sans-serif;background:#0f0e17;color:#e8e6f0;min-height:100vh;}
@@ -22,14 +21,13 @@
 
   /* Header */
   .hdr{
-    padding:20px 20px 16px;
+    padding:18px 22px 14px;
     background:linear-gradient(135deg,rgba(139,92,246,0.12) 0%,rgba(59,130,246,0.06) 100%);
     border-bottom:1px solid rgba(139,92,246,0.15);
     display:flex;align-items:center;justify-content:space-between;
   }
-  .hdr-left{}
-  .hdr-logo{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:500;letter-spacing:0.25em;text-transform:uppercase;color:rgba(139,92,246,0.8);margin-bottom:4px;}
-  .hdr-title{font-size:20px;font-weight:700;letter-spacing:-0.02em;color:#fff;}
+  .hdr-logo{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:500;letter-spacing:0.25em;text-transform:uppercase;color:rgba(139,92,246,0.8);margin-bottom:3px;}
+  .hdr-title{font-size:18px;font-weight:700;letter-spacing:-0.02em;color:#fff;}
   .hdr-title span{background:linear-gradient(90deg,#a78bfa,#60a5fa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
   .hdr-right{text-align:right;}
   .hdr-date{font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(232,230,240,0.4);margin-bottom:3px;}
@@ -40,60 +38,95 @@
   .badge-bull .badge-dot{background:#34d399;}
   .badge-bear .badge-dot{background:#f87171;}
 
-  /* Indices */
-  .indices{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:rgba(139,92,246,0.08);padding:0;}
-  .idx{padding:14px 12px;background:#16132a;text-align:center;}
-  .idx-name{font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:0.2em;text-transform:uppercase;color:rgba(232,230,240,0.35);margin-bottom:6px;}
-  .idx-val{font-size:17px;font-weight:700;color:#fff;letter-spacing:-0.02em;margin-bottom:4px;font-variant-numeric:tabular-nums;}
-  .pill{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;}
-  .pill-up{background:rgba(52,211,153,0.12);color:#34d399;}
-  .pill-dn{background:rgba(248,113,113,0.12);color:#f87171;}
-  .tri{display:inline-block;width:0;height:0;border-left:3px solid transparent;border-right:3px solid transparent;}
-  .tri-up{border-bottom:5px solid #34d399;}
-  .tri-dn{border-top:5px solid #f87171;}
+  /* HERO INDICES — bigger */
+  .hero{
+    padding:24px 18px;
+    background:radial-gradient(ellipse at center top,rgba(139,92,246,0.08),transparent 70%);
+    border-bottom:1px solid rgba(139,92,246,0.1);
+  }
+  .indices{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+  .idx{
+    background:linear-gradient(180deg,rgba(139,92,246,0.06),rgba(139,92,246,0.02));
+    border:1px solid rgba(139,92,246,0.15);
+    border-radius:12px;
+    padding:18px 10px;
+    text-align:center;
+    position:relative;
+    overflow:hidden;
+  }
+  .idx::before{
+    content:'';position:absolute;top:0;left:0;right:0;height:2px;
+    background:linear-gradient(90deg,transparent,rgba(167,139,250,0.6),transparent);
+  }
+  .idx-up::before{background:linear-gradient(90deg,transparent,#34d399,transparent);}
+  .idx-dn::before{background:linear-gradient(90deg,transparent,#f87171,transparent);}
+  .idx-name{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.22em;text-transform:uppercase;color:rgba(232,230,240,0.45);margin-bottom:10px;}
+  .idx-val{font-size:24px;font-weight:800;color:#fff;letter-spacing:-0.02em;margin-bottom:8px;font-variant-numeric:tabular-nums;}
+  .pill{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;}
+  .pill-up{background:rgba(52,211,153,0.15);color:#34d399;}
+  .pill-dn{background:rgba(248,113,113,0.15);color:#f87171;}
+  .tri{display:inline-block;width:0;height:0;border-left:3.5px solid transparent;border-right:3.5px solid transparent;}
+  .tri-up{border-bottom:5.5px solid #34d399;}
+  .tri-dn{border-top:5.5px solid #f87171;}
 
   /* Section label */
   .sec-hdr{padding:14px 20px 10px;display:flex;align-items:center;justify-content:space-between;}
-  .sec-label{font-size:10px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:rgba(232,230,240,0.35);}
+  .sec-label{font-size:10px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:rgba(232,230,240,0.4);}
   .sec-line{height:1px;flex:1;margin-left:12px;background:linear-gradient(90deg,rgba(139,92,246,0.3),transparent);}
 
-  /* Chart */
-  .chart-box{padding:0 16px 14px;}
-  .chart-wrap{height:150px;background:rgba(139,92,246,0.04);border-radius:8px;border:1px solid rgba(139,92,246,0.1);padding:10px;}
-
-  /* Forex + VIX cards */
+  /* Forex + VIX */
   .cards-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 16px 14px;}
-  .card{background:rgba(139,92,246,0.06);border:1px solid rgba(139,92,246,0.12);border-radius:10px;padding:14px 14px;}
+  .card{background:rgba(139,92,246,0.06);border:1px solid rgba(139,92,246,0.12);border-radius:10px;padding:12px 14px;}
   .card-label{font-size:9px;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;color:rgba(232,230,240,0.3);margin-bottom:8px;}
   .card-pair{font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(232,230,240,0.55);margin-bottom:4px;}
-  .card-val{font-size:18px;font-weight:700;color:#fff;letter-spacing:-0.01em;margin-bottom:6px;font-variant-numeric:tabular-nums;}
+  .card-val{font-size:18px;font-weight:700;color:#fff;letter-spacing:-0.01em;margin-bottom:4px;font-variant-numeric:tabular-nums;}
   .card-chg{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:500;}
-  .card-regime{display:inline-block;padding:2px 8px;border-radius:4px;font-size:9px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;}
+  .card-regime{display:inline-block;padding:2px 8px;border-radius:4px;font-size:9px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px;}
   .regime-calm{background:rgba(96,165,250,0.12);color:#60a5fa;border:1px solid rgba(96,165,250,0.2);}
   .regime-elev{background:rgba(251,191,36,0.12);color:#fbbf24;border:1px solid rgba(251,191,36,0.2);}
   .regime-stress{background:rgba(248,113,113,0.12);color:#f87171;border:1px solid rgba(248,113,113,0.2);}
 
   /* Sectors */
   .sectors{padding:0 16px 14px;}
-  .sector-row{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-radius:8px;margin-bottom:6px;}
+  .sector-row{display:flex;align-items:center;justify-content:space-between;padding:9px 14px;border-radius:8px;margin-bottom:6px;}
   .sector-row:last-child{margin-bottom:0;}
   .sector-row-up{background:rgba(52,211,153,0.05);border:1px solid rgba(52,211,153,0.12);}
   .sector-row-dn{background:rgba(248,113,113,0.05);border:1px solid rgba(248,113,113,0.1);}
   .sector-left{display:flex;align-items:center;gap:10px;}
-  .sector-icon{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;}
+  .sector-icon{width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;}
   .icon-tech{background:rgba(139,92,246,0.15);}
   .icon-energy{background:rgba(251,191,36,0.1);}
-  .icon-health{background:rgba(52,211,153,0.1);}
-  .icon-fin{background:rgba(96,165,250,0.1);}
   .sector-name{font-size:13px;font-weight:500;color:#e8e6f0;}
   .sector-sent{font-size:9px;color:rgba(232,230,240,0.35);margin-top:1px;letter-spacing:0.08em;}
-  .sector-right{}
   .sector-chg{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;}
   .clr-up{color:#34d399;}.clr-dn{color:#f87171;}.clr-neu{color:#60a5fa;}
 
-  /* Note */
+  /* Headlines */
+  .news{padding:0 16px 14px;}
+  .news-item{
+    display:flex;gap:10px;padding:10px 0;
+    border-bottom:1px solid rgba(139,92,246,0.08);
+  }
+  .news-item:last-child{border-bottom:none;}
+  .news-num{
+    flex-shrink:0;
+    width:22px;height:22px;border-radius:6px;
+    background:rgba(139,92,246,0.12);
+    border:1px solid rgba(139,92,246,0.2);
+    color:#a78bfa;
+    font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;
+    display:flex;align-items:center;justify-content:center;
+    margin-top:1px;
+  }
+  .news-body{flex:1;min-width:0;}
+  .news-title{font-size:12px;line-height:1.45;color:#e8e6f0;margin-bottom:4px;font-weight:400;}
+  .news-meta{display:flex;gap:8px;align-items:center;font-family:'JetBrains Mono',monospace;font-size:9px;color:rgba(232,230,240,0.35);letter-spacing:0.05em;}
+  .news-source{color:rgba(167,139,250,0.7);font-weight:500;text-transform:uppercase;letter-spacing:0.1em;}
+  .news-empty{padding:14px;text-align:center;font-size:11px;color:rgba(232,230,240,0.3);font-style:italic;}
+
+  /* Editor's note */
   .note-box{margin:0 16px 16px;padding:14px 16px;background:linear-gradient(135deg,rgba(139,92,246,0.08),rgba(96,165,250,0.05));border:1px solid rgba(139,92,246,0.15);border-radius:10px;}
-  .note-label{font-size:9px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:rgba(139,92,246,0.7);margin-bottom:7px;}
+  .note-label{font-size:9px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:rgba(139,92,246,0.7);margin-bottom:6px;}
   .note-text{font-size:12px;line-height:1.6;color:rgba(232,230,240,0.7);}
 
   /* Footer */
@@ -107,7 +140,6 @@
 <body>
 <div class="shell">
 
-  <!-- Header -->
   <div class="hdr">
     <div class="hdr-left">
       <div class="hdr-logo">US Market Close</div>
@@ -119,13 +151,9 @@
     </div>
   </div>
 
-  <!-- Indices -->
-  <div class="indices" id="indices"></div>
-
-  <!-- Chart -->
-  <div class="sec-hdr"><span class="sec-label">Daily Performance</span><div class="sec-line"></div></div>
-  <div class="chart-box">
-    <div class="chart-wrap"><canvas id="perf" role="img" aria-label="Daily performance bar chart"></canvas></div>
+  <!-- HERO -->
+  <div class="hero">
+    <div class="indices" id="indices"></div>
   </div>
 
   <!-- Forex + VIX -->
@@ -136,15 +164,18 @@
   <div class="sec-hdr"><span class="sec-label">Sector Movers</span><div class="sec-line"></div></div>
   <div class="sectors" id="sectors"></div>
 
+  <!-- News -->
+  <div class="sec-hdr"><span class="sec-label">📰 Today's Headlines</span><div class="sec-line"></div></div>
+  <div class="news" id="news"></div>
+
   <!-- Note -->
   <div class="note-box">
     <div class="note-label">✦ Editor's Note</div>
     <div class="note-text" id="note"></div>
   </div>
 
-  <!-- Footer -->
   <div class="ftr">
-    <div class="ftr-left" id="ftr-date">Compiled at US close · —</div>
+    <div class="ftr-left" id="ftr-date">—</div>
     <div class="ftr-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
   </div>
 
@@ -153,12 +184,10 @@
 <script id="market-data" type="application/json">__DATA_JSON__</script>
 <script>
 const D = JSON.parse(document.getElementById('market-data').textContent);
-
 const fmt  = n => n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
 const pct  = n => (n>=0?'+':'')+n.toFixed(2)+'%';
 const isUp = n => n >= 0;
 
-// Header date + badge
 const d = new Date(D.date+'T00:00:00');
 const days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -169,9 +198,8 @@ const badge = document.getElementById('hdr-badge');
 badge.className = 'badge '+(avgChg>=0?'badge-bull':'badge-bear');
 badge.innerHTML = `<span class="badge-dot"></span>${avgChg>=0?'RISK ON':'RISK OFF'}`;
 
-// Indices
 document.getElementById('indices').innerHTML = D.indices.map(i=>`
-  <div class="idx">
+  <div class="idx ${isUp(i.change)?'idx-up':'idx-dn'}">
     <div class="idx-name">${i.name}</div>
     <div class="idx-val">${fmt(i.level)}</div>
     <div class="pill ${isUp(i.change)?'pill-up':'pill-dn'}">
@@ -180,7 +208,6 @@ document.getElementById('indices').innerHTML = D.indices.map(i=>`
     </div>
   </div>`).join('');
 
-// Forex + VIX
 const regimeCls = r => r==='Calm'?'regime-calm':r==='Elevated'?'regime-elev':'regime-stress';
 document.getElementById('cards').innerHTML = `
   <div class="card">
@@ -196,9 +223,8 @@ document.getElementById('cards').innerHTML = `
     <div class="card-chg ${isUp(D.vix.change)?'clr-up':'clr-dn'}">${pct(D.vix.change)}</div>
   </div>`;
 
-// Sector icons map
-const icons = {Technology:'💻',Energy:'🛢',Healthcare:'🏥',Financials:'🏦',Materials:'⚗️',Utilities:'⚡'};
-const iconCls = {Technology:'icon-tech',Energy:'icon-energy',Healthcare:'icon-health',Financials:'icon-fin'};
+const icons = {Technology:'💻',Energy:'🛢',Healthcare:'🏥',Financials:'🏦'};
+const iconCls = {Technology:'icon-tech',Energy:'icon-energy'};
 document.getElementById('sectors').innerHTML = D.sectors.map(s=>`
   <div class="sector-row ${isUp(s.change)?'sector-row-up':'sector-row-dn'}">
     <div class="sector-left">
@@ -211,52 +237,26 @@ document.getElementById('sectors').innerHTML = D.sectors.map(s=>`
     <div class="sector-chg ${isUp(s.change)?'clr-up':s.change===0?'clr-neu':'clr-dn'}">${pct(s.change)}</div>
   </div>`).join('');
 
-// Note + footer
+const newsEl = document.getElementById('news');
+if (D.headlines && D.headlines.length) {
+  newsEl.innerHTML = D.headlines.map((h,i)=>`
+    <div class="news-item">
+      <div class="news-num">${i+1}</div>
+      <div class="news-body">
+        <div class="news-title">${h.title}</div>
+        <div class="news-meta">
+          <span class="news-source">${h.source}</span>
+          ${h.age?`<span>· ${h.age} ago</span>`:''}
+        </div>
+      </div>
+    </div>`).join('');
+} else {
+  newsEl.innerHTML = `<div class="news-empty">No headlines available</div>`;
+}
+
 document.getElementById('note').textContent = D.closingNote;
 document.getElementById('ftr-date').textContent = `Compiled at US close · ${D.date}`;
 
-// Chart
-const items = [
-  ...D.indices.map(i=>({name:i.name.replace(' 500',''),change:i.change})),
-  ...D.sectors.map(s=>({name:s.name,change:s.change})),
-  {name:'VIX',change:D.vix.change},
-  {name:D.forex.pair,change:D.forex.change}
-].sort((a,b)=>b.change-a.change);
-
-try{
-  new Chart(document.getElementById('perf').getContext('2d'),{
-    type:'bar',
-    data:{
-      labels:items.map(i=>i.name),
-      datasets:[{
-        data:items.map(i=>i.change),
-        backgroundColor:items.map(i=>i.change>=0?'rgba(52,211,153,0.7)':'rgba(248,113,113,0.7)'),
-        borderColor:items.map(i=>i.change>=0?'rgba(52,211,153,1)':'rgba(248,113,113,1)'),
-        borderWidth:1,
-        borderRadius:4,
-        barPercentage:0.7,
-        categoryPercentage:0.85
-      }]
-    },
-    options:{
-      responsive:true,maintainAspectRatio:false,animation:false,
-      plugins:{legend:{display:false},tooltip:{
-        backgroundColor:'rgba(22,19,42,0.95)',
-        titleColor:'rgba(232,230,240,0.5)',titleFont:{family:"'JetBrains Mono',monospace",size:9},
-        bodyColor:'#fff',bodyFont:{family:"'JetBrains Mono',monospace",size:11},
-        padding:8,cornerRadius:6,
-        callbacks:{label:c=>(c.parsed.y>=0?'+':'')+c.parsed.y.toFixed(2)+'%'}
-      }},
-      scales:{
-        x:{grid:{display:false},border:{display:false},
-           ticks:{color:'rgba(232,230,240,0.3)',font:{family:"'JetBrains Mono',monospace",size:8},maxRotation:0}},
-        y:{grid:{color:'rgba(139,92,246,0.08)'},border:{display:false},
-           ticks:{color:'rgba(232,230,240,0.3)',font:{family:"'JetBrains Mono',monospace",size:8},
-                  callback:v=>(v>=0?'+':'')+v+'%'}}
-      }
-    }
-  });
-}catch(e){console.warn('Chart failed:',e);}
 window.__chartReady = true;
 </script>
 </body>

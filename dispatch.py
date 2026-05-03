@@ -11,9 +11,10 @@ The Closing Bell — Daily Market Dispatch to Telegram
 import json
 import os
 import sys
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
+import feedparser
 import requests
 import yfinance as yf
 from playwright.sync_api import sync_playwright
@@ -80,6 +81,58 @@ def sector_sentiment(change):
     return "Neutral"
 
 
+# ─── News & economic events ────────────────────────────────────────
+NEWS_FEEDS = [
+    # CNBC top financial news — usually 20 freshest items
+    ("CNBC", "https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=10000664"),
+    # MarketWatch top stories — Dow Jones backed
+    ("MarketWatch", "https://feeds.content.dowjones.io/public/rss/mw_topstories"),
+    # Reuters business & finance
+    ("Reuters", "https://feeds.reuters.com/reuters/businessNews"),
+]
+
+
+def fetch_headlines(max_items=4):
+    """Pull top financial headlines from RSS feeds. Returns list of dicts."""
+    print("→ Fetching headlines...")
+    seen_titles = set()
+    headlines = []
+
+    for source, url in NEWS_FEEDS:
+        try:
+            feed = feedparser.parse(url, request_headers={"User-Agent": "Mozilla/5.0"})
+            if not feed.entries:
+                continue
+            for entry in feed.entries[:6]:
+                title = entry.get("title", "").strip()
+                if not title or title.lower() in seen_titles:
+                    continue
+                seen_titles.add(title.lower())
+
+                # Parse pub time → "2h ago" style
+                pub = entry.get("published_parsed") or entry.get("updated_parsed")
+                age = ""
+                if pub:
+                    pub_dt = datetime(*pub[:6], tzinfo=timezone.utc)
+                    delta = datetime.now(timezone.utc) - pub_dt
+                    h = int(delta.total_seconds() / 3600)
+                    if h < 1:
+                        age = f"{int(delta.total_seconds()/60)}m"
+                    elif h < 24:
+                        age = f"{h}h"
+                    else:
+                        age = f"{h//24}d"
+
+                headlines.append({"title": title[:140], "source": source, "age": age})
+                if len(headlines) >= max_items:
+                    return headlines
+        except Exception as e:
+            print(f"  ⚠ {source} feed failed: {e}")
+            continue
+
+    return headlines
+
+
 # ─── Closing note ──────────────────────────────────────────────────
 def write_closing_note(data, date_str):
     """Use Claude to write a 1-2 sentence editorial note. Falls back to a
@@ -133,7 +186,7 @@ No emojis. No headers. No quotation marks. Just the prose."""
 
 
 # ─── Render ────────────────────────────────────────────────────────
-def build_payload(data, date_str, note):
+def build_payload(data, date_str, note, headlines):
     return {
         "date": date_str,
         "issueNumber": f"{datetime.now().timetuple().tm_yday:03d}",
@@ -158,6 +211,7 @@ def build_payload(data, date_str, note):
             {"name": "Energy",     "change": round(data["energy"]["change"], 2),
              "sentiment": sector_sentiment(data["energy"]["change"])},
         ],
+        "headlines": headlines,
         "closingNote": note,
     }
 
@@ -226,10 +280,13 @@ def main():
     data, date_str = fetch_market_data()
     print(f"  Latest close: {date_str}")
 
+    headlines = fetch_headlines(max_items=4)
+    print(f"  Got {len(headlines)} headlines")
+
     note = write_closing_note(data, date_str)
     print(f"  Note: {note}")
 
-    payload = build_payload(data, date_str, note)
+    payload = build_payload(data, date_str, note, headlines)
     html_path = render_html(payload)
     png_path = render_png(html_path)
     send_telegram(png_path, payload)
