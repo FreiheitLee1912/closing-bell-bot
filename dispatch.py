@@ -185,7 +185,7 @@ def render_png(html_path):
         except Exception:
             print("⚠ chartReady signal didn't fire — proceeding anyway")
         page.wait_for_timeout(800)
-        page.locator(".paper").screenshot(path=str(OUTPUT_PNG))
+        page.locator(".shell").screenshot(path=str(OUTPUT_PNG))
         browser.close()
     return OUTPUT_PNG
 
