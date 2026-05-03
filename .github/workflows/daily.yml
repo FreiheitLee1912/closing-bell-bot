@@ -1,0 +1,45 @@
+name: Daily Market Dispatch
+
+on:
+  schedule:
+    # 22:30 UTC, Mon–Fri = ~90 min after US market close
+    # = roughly 07:30 JST next morning (year-round)
+    - cron: '30 22 * * 1-5'
+  workflow_dispatch:        # allow manual run from Actions tab
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Install Python deps
+        run: pip install -r requirements.txt
+
+      - name: Install Playwright Chromium
+        run: playwright install --with-deps chromium
+
+      - name: Run dispatch
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID:   ${{ secrets.TELEGRAM_CHAT_ID }}
+          ANTHROPIC_API_KEY:  ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python dispatch.py
+
+      - name: Upload artifact on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-output
+          path: |
+            rendered.html
+            dispatch.png
+          if-no-files-found: ignore
+          retention-days: 3

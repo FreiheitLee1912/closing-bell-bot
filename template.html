@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Closing Bell</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..900;1,9..144,400..900&family=DM+Sans:opsz,wght@9..40,400..500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --paper:#f5efe1; --paper-2:#ebe3d0; --ink:#1a1612; --ink-soft:#4a423a;
+    --ink-faint:#8a7f72; --rule:#c9bfa9; --green:#1f5b35; --red:#8b2218; --gold:#b8893d;
+    --serif:'Fraunces',Georgia,serif; --sans:'DM Sans',system-ui,sans-serif; --mono:'JetBrains Mono',monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{font-family:var(--sans);background:var(--paper-2);color:var(--ink);min-height:100vh;line-height:1.5;}
+  body{padding:40px 24px;background-image:radial-gradient(circle at 1px 1px,rgba(26,22,18,0.05) 1px,transparent 0);background-size:22px 22px;}
+  .paper{max-width:760px;margin:0 auto;background:var(--paper);padding:56px 56px 40px;position:relative;box-shadow:0 1px 2px rgba(0,0,0,0.05),0 12px 28px -16px rgba(26,22,18,0.18);}
+  .paper::before,.paper::after{content:'';position:absolute;width:18px;height:18px;border:1.5px solid var(--ink);}
+  .paper::before{top:14px;left:14px;border-right:none;border-bottom:none;}
+  .paper::after{bottom:14px;right:14px;border-left:none;border-top:none;}
+  .masthead{text-align:center;border-bottom:4px double var(--ink);padding-bottom:22px;margin-bottom:32px;}
+  .meta-line{display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:0.14em;color:var(--ink-soft);margin-bottom:18px;}
+  .meta-line .center{color:var(--gold);font-weight:500;}
+  .title{font-family:var(--serif);font-weight:700;font-style:italic;font-size:68px;line-height:0.92;letter-spacing:-0.025em;margin:4px 0;font-variation-settings:"opsz" 144;}
+  .subtitle{font-family:var(--serif);font-style:italic;font-weight:400;font-size:13px;color:var(--ink-soft);margin-top:10px;letter-spacing:0.06em;}
+  .subtitle::before,.subtitle::after{content:'——';opacity:0.5;margin:0 10px;}
+  .section-h{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:0.2em;color:var(--ink-soft);padding-bottom:8px;margin-bottom:18px;border-bottom:1px solid var(--rule);display:flex;align-items:baseline;justify-content:space-between;}
+  .section-h .num{color:var(--ink-faint);font-style:italic;font-family:var(--serif);font-size:13px;text-transform:lowercase;letter-spacing:0;}
+  section{margin-bottom:32px;}
+  .indices{display:grid;grid-template-columns:1fr 1fr 1fr;border:1px solid var(--rule);}
+  .index-cell{padding:22px 16px;border-right:1px solid var(--rule);text-align:center;}
+  .index-cell:last-child{border-right:none;}
+  .idx-name{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:0.18em;color:var(--ink-soft);margin-bottom:10px;}
+  .idx-level{font-family:var(--serif);font-weight:500;font-size:30px;letter-spacing:-0.015em;margin-bottom:6px;line-height:1;}
+  .idx-change{font-family:var(--mono);font-size:13px;font-weight:500;display:inline-flex;align-items:center;gap:4px;}
+  .pos{color:var(--green);} .neg{color:var(--red);}
+  .arrow{display:inline-block;width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent;}
+  .arrow.up{border-bottom:6px solid var(--green);}
+  .arrow.down{border-top:6px solid var(--red);}
+  .chart-wrap{height:220px;padding:8px 0 0;}
+  .duo{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--rule);}
+  .duo-item{padding:18px 22px;border-right:1px solid var(--rule);}
+  .duo-item:last-child{border-right:none;}
+  .duo-label{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:0.16em;color:var(--ink-soft);margin-bottom:12px;}
+  .duo-row{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:4px;}
+  .duo-name{font-family:var(--serif);font-size:17px;font-weight:500;}
+  .duo-value{font-family:var(--mono);font-size:19px;font-weight:500;}
+  .duo-sub{font-family:var(--mono);font-size:11px;color:var(--ink-faint);margin-top:4px;letter-spacing:0.04em;}
+  .sector-list{border-top:1px solid var(--rule);}
+  .sector-row{display:grid;grid-template-columns:1fr auto 80px;gap:16px;padding:14px 4px;border-bottom:1px solid var(--rule);align-items:baseline;}
+  .sector-name{font-family:var(--serif);font-size:19px;font-weight:500;}
+  .sector-sentiment{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:0.14em;color:var(--ink-soft);padding:2px 8px;border:1px solid var(--rule);border-radius:999px;}
+  .sector-change{font-family:var(--mono);font-size:14px;font-weight:500;text-align:right;}
+  .closing-note{font-family:var(--serif);font-style:italic;font-weight:400;font-size:20px;line-height:1.55;color:var(--ink);text-align:center;padding:32px;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);position:relative;background:linear-gradient(180deg,transparent 0%,rgba(184,137,61,0.04) 100%);}
+  .closing-note::before{content:'"';position:absolute;font-size:96px;line-height:1;top:0;left:14px;color:var(--gold);font-family:var(--serif);opacity:0.35;font-style:italic;}
+  .closing-note::after{content:'"';position:absolute;font-size:96px;line-height:0.6;bottom:0;right:14px;color:var(--gold);font-family:var(--serif);opacity:0.35;font-style:italic;}
+  .footer{text-align:center;margin-top:28px;padding-top:16px;border-top:1px solid var(--rule);font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:0.2em;color:var(--ink-faint);}
+  .ornament{color:var(--gold);margin:0 12px;}
+  @media (max-width:640px){
+    body{padding:12px;} .paper{padding:40px 22px 28px;} .title{font-size:44px;}
+    .indices{grid-template-columns:1fr;} .index-cell{border-right:none;border-bottom:1px solid var(--rule);} .index-cell:last-child{border-bottom:none;}
+    .duo{grid-template-columns:1fr;} .duo-item{border-right:none;border-bottom:1px solid var(--rule);} .duo-item:last-child{border-bottom:none;}
+  }
+</style>
+</head>
+<body>
+<article class="paper">
+  <header class="masthead">
+    <div class="meta-line">
+      <span id="meta-issue">No. 000</span>
+      <span class="center">Daily Dispatch</span>
+      <span id="meta-date">—</span>
+    </div>
+    <h1 class="title">The Closing Bell</h1>
+    <p class="subtitle">a daily dispatch from US markets</p>
+  </header>
+
+  <section>
+    <div class="section-h"><span>Major indices</span><span class="num">i.</span></div>
+    <div class="indices" id="indices"></div>
+  </section>
+
+  <section>
+    <div class="section-h"><span>Daily performance</span><span class="num">ii.</span></div>
+    <div class="chart-wrap"><canvas id="perf" role="img" aria-label="Daily percent changes"></canvas></div>
+  </section>
+
+  <section>
+    <div class="section-h"><span>Forex &amp; volatility</span><span class="num">iii.</span></div>
+    <div class="duo" id="duo"></div>
+  </section>
+
+  <section>
+    <div class="section-h"><span>Sector movers</span><span class="num">iv.</span></div>
+    <div class="sector-list" id="sectors"></div>
+  </section>
+
+  <section>
+    <div class="section-h"><span>Editor's note</span><span class="num">v.</span></div>
+    <p class="closing-note" id="note"></p>
+  </section>
+
+  <div class="footer">
+    <span>Compiled at US close</span>
+    <span class="ornament">✦</span>
+    <span id="footer-date">—</span>
+    <span class="ornament">✦</span>
+    <span>End of dispatch</span>
+  </div>
+</article>
+
+<script id="market-data" type="application/json">__DATA_JSON__</script>
+<script>
+const DATA = JSON.parse(document.getElementById('market-data').textContent);
+
+const fmt = n => n.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+const pct = n => (n >= 0 ? '+' : '') + n.toFixed(2) + '%';
+const cls = n => n >= 0 ? 'pos' : 'neg';
+const arrow = n => `<span class="arrow ${n >= 0 ? 'up' : 'down'}"></span>`;
+
+const d = new Date(DATA.date + 'T00:00:00');
+const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+document.getElementById('meta-issue').textContent = `No. ${DATA.issueNumber}`;
+document.getElementById('meta-date').textContent = `${days[d.getDay()]} · ${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+document.getElementById('footer-date').textContent = DATA.date;
+
+document.getElementById('indices').innerHTML = DATA.indices.map(i => `
+  <div class="index-cell">
+    <div class="idx-name">${i.name}</div>
+    <div class="idx-level">${fmt(i.level)}</div>
+    <div class="idx-change ${cls(i.change)}">${arrow(i.change)} ${pct(i.change)}</div>
+  </div>`).join('');
+
+document.getElementById('duo').innerHTML = `
+  <div class="duo-item">
+    <div class="duo-label">Currency</div>
+    <div class="duo-row"><span class="duo-name">${DATA.forex.pair}</span><span class="duo-value">${fmt(DATA.forex.value)}</span></div>
+    <div class="duo-sub ${cls(DATA.forex.change)}">${pct(DATA.forex.change)} on the day</div>
+  </div>
+  <div class="duo-item">
+    <div class="duo-label">Volatility · VIX</div>
+    <div class="duo-row"><span class="duo-name">${DATA.vix.regime}</span><span class="duo-value">${fmt(DATA.vix.value)}</span></div>
+    <div class="duo-sub">${pct(DATA.vix.change)} · ${DATA.vix.regime.toLowerCase()} regime</div>
+  </div>`;
+
+document.getElementById('sectors').innerHTML = DATA.sectors.map(s => `
+  <div class="sector-row">
+    <span class="sector-name">${s.name}</span>
+    <span class="sector-sentiment">${s.sentiment}</span>
+    <span class="sector-change ${cls(s.change)}">${pct(s.change)}</span>
+  </div>`).join('');
+
+document.getElementById('note').textContent = DATA.closingNote;
+
+const items = [
+  ...DATA.indices.map(i => ({ name: i.name, change: i.change })),
+  ...DATA.sectors.map(s => ({ name: s.name, change: s.change })),
+  { name: 'VIX', change: DATA.vix.change },
+  { name: DATA.forex.pair, change: DATA.forex.change }
+].sort((a, b) => b.change - a.change);
+
+try {
+  new Chart(document.getElementById('perf').getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels: items.map(i => i.name),
+      datasets: [{
+        data: items.map(i => i.change),
+        backgroundColor: items.map(i => i.change >= 0 ? '#1f5b35' : '#8b2218'),
+        borderRadius: 0,
+        barPercentage: 0.65,
+        categoryPercentage: 0.85
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: {
+          grid: { display: false },
+          border: { color: '#1a1612', width: 1 },
+          ticks: { font: { family: "'JetBrains Mono', monospace", size: 10 }, color: '#4a423a', maxRotation: 0, autoSkip: false }
+        },
+        y: {
+          grid: { color: 'rgba(26,22,18,0.07)' },
+          border: { display: false },
+          ticks: { font: { family: "'JetBrains Mono', monospace", size: 10 }, color: '#8a7f72', callback: v => (v >= 0 ? '+' : '') + v + '%' }
+        }
+      }
+    }
+  });
+} catch (e) {
+  console.warn('Chart render failed:', e);
+}
+window.__chartReady = true;
+</script>
+</body>
+</html>

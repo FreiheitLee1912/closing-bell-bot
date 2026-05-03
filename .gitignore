@@ -1,0 +1,17 @@
+# Generated outputs
+rendered.html
+dispatch.png
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
