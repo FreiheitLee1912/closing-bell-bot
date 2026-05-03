@@ -2,9 +2,10 @@ name: Daily Market Dispatch
 
 on:
   schedule:
-    # 22:30 UTC, Mon–Fri = ~90 min after US market close
-    # = roughly 07:30 JST next morning (year-round)
-    - cron: '30 22 * * 1-5'
+    # 21:00 UTC, Mon–Fri = 06:00 JST next morning (Tue–Sat)
+    # ⚠ 美股夏令時(EDT)：收盤 20:00 UTC → 跑時點有 1 小時 buffer
+    # ⚠ 美股冬令時(EST, 11月-3月)：收盤 21:00 UTC → 跑時點剛好收盤，建議改成 21:30 或 22:00
+    - cron: '0 21 * * 1-5'
   workflow_dispatch:        # allow manual run from Actions tab
 
 jobs:
